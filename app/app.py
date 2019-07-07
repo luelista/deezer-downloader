@@ -9,7 +9,7 @@ from functools import wraps
 from threading import Thread
 
 from flask import Flask, render_template, request, jsonify
-from settings import update_mpd
+from settings import update_mpd, api_root, static_root
 from deezer import deezerSearch, my_list_album, my_download_song, my_download_album 
 
 from ipdb import set_trace
@@ -98,7 +98,8 @@ def serve_static(filename):
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html",
+        api_root=api_root, static_root=static_root)
 
 
 if __name__ == '__main__':

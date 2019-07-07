@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     function search_track() {
-        $.post('/api/v1/deezer/search', 
+        $.post(deezer_downloader_api_root + '/search', 
             JSON.stringify({ type: "track", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -12,7 +12,7 @@ $(document).ready(function() {
     }
 
     function search_album() {
-        $.post('/api/v1/deezer/search', 
+        $.post(deezer_downloader_api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -37,7 +37,7 @@ var bbody = document.getElementById('body');
 bbody.onkeydown = function (event) {
     if (event.key !== undefined) {
        if (event.key === 'Enter' && event.altKey) {
-         $.post('/api/v1/deezer/search', 
+         $.post(deezer_downloader_api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -46,7 +46,7 @@ bbody.onkeydown = function (event) {
                 }
          });
        }  else if (event.key === 'Enter' ) {
-          $.post('/api/v1/deezer/search', 
+          $.post(deezer_downloader_api_root + '/search', 
               JSON.stringify({ type: "track", query: $('#query').val() }),
               function(data) {
                   $("#results > tbody").html("");
