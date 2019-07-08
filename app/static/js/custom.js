@@ -59,8 +59,8 @@ $(document).ready(function() {
                 } else if (item.status == "done") {
                     tr.find(".status").hide();
                     tr.find(".playbtn, .downloadbtn").show();
-                    tr.find(".playbtn button").attr("disabled",true);
-                    tr.find(".downloadbtn button").attr("disabled",false);
+                    tr.find(".playbtn button").attr("disabled",false);
+                    tr.find(".downloadbtn button").attr("disabled",true);
                 } else {
                     tr.find(".status").show().text(item.status);
                     tr.find(".playbtn, .downloadbtn").hide();
