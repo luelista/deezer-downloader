@@ -106,13 +106,14 @@ $(document).ready(function() {
     }
 
     deezer_downloader.list_album = function(music_id) {
+        $("#albumList").modal("show");
         messageBar.loading.show();
         $.post(deezer_downloader.api_root + '/album/list', 
             JSON.stringify({ music_id: parseInt(music_id) }),
             function(data) {
-                $("#results > tbody").html("");
+                $("#albumListResults > tbody").html("");
                 for (var i = 0; i < data.length; i++) {
-                    drawTableEntry(data[i], "album");
+                    drawTableEntry(data[i], "track");
                 }
         });
     }
@@ -124,6 +125,8 @@ $(document).ready(function() {
     $("#search_album").click(function() {
         search_album();
     });
+
+    $("#albumList").modal();
 
     var bbody = document.getElementById('body');
     bbody.onkeydown = function (event) {
