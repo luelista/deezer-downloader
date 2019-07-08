@@ -153,6 +153,7 @@ $(document).ready(function() {
 
 function MessageBar() {
     var self = this;
+    var hideIntervalId = null;
     this.show = function(className, text, interval, isHtml) {
       var id = "loadingWidget_" + className;
       if ($('#'+id).length == 0)
@@ -160,10 +161,12 @@ function MessageBar() {
       var $el = $('#'+id);
       if (isHtml) $el.html(text); else $el.text(text);
       $el.addClass(className).slideDown();
-      if (interval) setInterval(function() { messageBar.hide(className); }, interval);
+      if (hideIntervalId) { clearInterval(hideIntervalId); hideIntervalId=null; }
+      if (interval) hideIntervalId=setInterval(function() { messageBar.hide(className); }, interval);
     };
     this.hide = function(className) {
       $("#loadingWidget_"+className).slideUp();
+      clearInterval(hideIntervalId); hideIntervalId=null;
     };
     this.loading = $("<div class='progressBar'></div>").prependTo("body").hide();
     
