@@ -11,7 +11,7 @@ from threading import Thread
 from flask import Flask, render_template, request, jsonify
 
 import settings, credentials
-from deezer import deezerSearch, my_list_album, my_download_song, my_download_album, set_session_id
+from deezer import deezerSearch, my_list_album, my_download_song, my_download_album, set_session_id, get_download_status
 set_session_id(credentials.sid)
 
 from ipdb import set_trace
@@ -32,6 +32,9 @@ def validate_schema(*parameters_to_check):
             if "music_id" in j.keys():
                 if not isinstance(j['music_id'], int):
                     return jsonify({"Error": "music_id must be a digit"}),400
+            if "music_ids" in j.keys():
+                if not isinstance(j['music_ids'], list) or not all(isinstance(x,int) for x in j['music_ids']):
+                    return jsonify({"Error": "music_ids must be a list of int"}),400
             if "add" in j.keys():
                 if not isinstance(j['add'], bool):
                     return jsonify({"Error": "all must be a boolean"}),400
@@ -70,6 +73,18 @@ def list_album():
     """
     music_id = request.get_json(force=True)['music_id']
     return jsonify(my_list_album(music_id))
+
+@app.route('/api/v1/deezer/status', methods=['POST'])
+@validate_schema("music_ids")
+def list_album():
+    """
+    para:
+        music_ids (array of int): music_ids to check status of
+    return:
+        [ { music_id, status } ]
+    """
+    music_ids = request.get_json(force=True)['music_ids']
+    return jsonify([ { music_id: id, status: get_download_status(id) for id in music_ids } ])
 
 
 @app.route('/api/v1/deezer/download', methods=['POST'])

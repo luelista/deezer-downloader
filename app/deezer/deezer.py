@@ -85,6 +85,7 @@ pyglet.have_avbin=True
 host_stream_cdn = "https://e-cdns-proxy-%s.dzcdn.net/mobile/1"
 setting_domain_img = "https://e-cdns-images.dzcdn.net/images"
 
+download_status = dict()
 
 
 class ScriptExtractor(HTMLParser.HTMLParser):
@@ -440,6 +441,7 @@ def download(song, album, fname="", target_dir="/tmp/music"):
 
     if not song.get("SNG_ID"):
         print("Invalid song")
+        download_status[song.get("SNG_ID")]
         return
 
     urlkey = genurlkey( int(song.get("SNG_ID")), 
@@ -613,25 +615,38 @@ def my_download_from_json_file():
 
 
 def my_download_album(album_id, music_dir, download_dir_name, update_mpd, add_to_playlist):
+    download_status[album_id] = "parsing"
     target_dir = music_dir + "/" + download_dir_name
     song_locations = []
-    for song in parse_deezer_page("album", album_id):
+    songs = parse_deezer_page("album", album_id)
+    for i, song in enumerate(songs):
+        download_status[album_id] = "downloading %d of %d" % (i, len(songs))
         filename = download(song, album=True, target_dir=target_dir)
         song_locations.append(download_dir_name + "/" + filename)
     songs_locations = sorted_nicely(set(song_locations))
     if update_mpd:
+        download_status[album_id] = "updating mpd"
         mpd_update(song_locations, add_to_playlist)
+    download_status[album_id] = "done"
     return song_locations
 
 
 def my_download_song(track_id, music_dir, download_dir_name, update_mpd=True, add_to_playlist=False):
+    download_status[track_id] = "downloading"
     target_dir = music_dir + "/" + download_dir_name
     song = list(parse_deezer_page("track", track_id))[0]
     filename = download(song, album=False, target_dir=target_dir)
     song_location = download_dir_name + "/" + filename
     if update_mpd:
+        download_status[track_id] = "updating mpd"
         mpd_update([song_location], add_to_playlist)
+    download_status[track_id] = "done"
 
+def get_download_status(music_id):
+    if music_id in download_status:
+        return download_status[music_id]
+    else:
+        return "unknown"
 
 if __name__ == '__main__':
     my_download_song("2271563", "/tmp/music", "deezer", True, True)

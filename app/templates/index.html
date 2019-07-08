@@ -78,63 +78,10 @@
     <script src="{{ static_root }}/js/custom.js"></script>
     <script>
         window.deezer_downloader_api_root = '{{ api_root }}';
-
-        function drawTableEntry(rowData, mtype) {
-            var row = $("<tr />")
-            console.log(rowData);
-            $("#results").append(row); 
-            row.append($("<td>" + rowData.artist + "</td>"));
-            row.append($("<td>" + rowData.title + "</td>"));
-            row.append($("<td>" + rowData.album + "</td>"));
-                row.append($("<td>" + 
-                    '<button class="btn btn-default" id="music-' + rowData.music_id + '" onclick="download(\'' + rowData.id  + '\', \''+ mtype + '\', false);" > <i class="fa fa-download" title="download" ></i> </button>'  +
-
-                "</td>"));
-                row.append($("<td>" + 
-                    '<button class="btn btn-default" id="music-' + rowData.music_id + '" onclick="download(\'' + rowData.id  + '\', \''+ mtype + '\', true);" > <i class="fa fa-play-circle" title="download and add to playlist" ></i> </button>'  +
-                "</td>"));
-            if(mtype == "album") {
-                row.append($("<td>" + 
-                   '<button class="btn btn-default" id="music-' + rowData.music_id + '" onclick="list_album(\'' + rowData.id  + '\');" >list album </button>'  +
-                   "</td>"));
-            }
-        }
-        
-        function download(music_id, type, add) {
-            $.post(deezer_downloader_api_root + '/download', 
-                JSON.stringify({ type: type, music_id: parseInt(music_id), add: add}),
-                function(data) {
-					if(type == "album") {
-						if(add == true) {
-							text = "Good choice! The album will be downloaded and queued to the playlist";
-						} else {
-							text = "Good choice! The album will be downloaded.";
-						}
-					} else {
-						if(add == true) {
-							text = "Good choice! The song will be downloaded and queued to the playlist";
-						} else {
-							text = "Good choice! The song will be downloaded.";
-						}
-					}
-					$.jGrowl(text, { life: 4000 });
-            });
-        }
-
-        function list_album(music_id) {
-            $.post(deezer_downloader_api_root + '/album/list', 
-                JSON.stringify({ music_id: parseInt(music_id) }),
-                function(data) {
-                    $("#results > tbody").html("");
-                    for (var i = 0; i < data.length; i++) {
-                        drawTableEntry(data[i], "album");
-                    }
-            });
-        }
     </script>
 
-<link rel="stylesheet" type="text/css" href="/static/css/jquery.jgrowl.min.css" />
-<script src="/static/js/jquery.jgrowl.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{{ static_root }}/css/jquery.jgrowl.min.css" />
+<script src="{{ static_root }}/js/jquery.jgrowl.min.js"></script>
 
 
   </body>
