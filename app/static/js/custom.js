@@ -33,14 +33,14 @@ $(document).ready(function() {
         row.append($("<td>" + rowData.album + "</td>"));
         row.append($("<td class='status' colspan=2 style='display:none'></td>"));
             row.append($('<td class="downloadbtn">' + 
-                '<button class="btn btn-default" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', false);" > <i class="fa fa-download" title="download" ></i> </button>'  +
+                '<button class="btn btn-primary" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', false);" > <i class="fa fa-download" title="download" ></i> </button>'  +
             "</td>"));
             row.append($('<td class="playbtn">' + 
-                '<button class="btn btn-default" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', true);" > <i class="fa fa-play-circle" title="download and add to playlist" ></i> </button>'  +
+                '<button class="btn btn-success" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', true);" > <i class="fa fa-play-circle" title="download and add to playlist" ></i> </button>'  +
             "</td>"));
         if(mtype == "album") {
             row.append($("<td class='listbtn'>" + 
-               '<button class="btn btn-default" onclick="deezer_downloader.list_album(\'' + rowData.id  + '\');" >list album </button>'  +
+               '<button class="btn btn-secondary" onclick="deezer_downloader.list_album(\'' + rowData.id  + '\');" >list album </button>'  +
                "</td>"));
         }
     }
