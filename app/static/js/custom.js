@@ -47,7 +47,8 @@ $(document).ready(function() {
         if (document.hidden) return; //don't check status if page is in background
         var musicIds = $("tr[data-music-id]").map(function() { return parseInt(this.getAttribute("data-music-id")); });
         if (musicIds.length == 0) return;
-        $.post(deezer_downloader.api_root + '/status', { music_ids : musicIds }, function(data) {
+        $.post(deezer_downloader.api_root + '/status', JSON.stringify({ music_ids : musicIds }),
+        function(data) {
             data.forEach(function(item) {
                 var tr = $("tr[data-music-id='"+item.music_id+"']");
                 if (item.status == "unknown") {
