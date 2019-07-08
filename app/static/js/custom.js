@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
     function search_track() {
+        messageBar.loading.show();
         $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "track", query: $('#query').val() }),
             function(data) {
@@ -12,6 +13,7 @@ $(document).ready(function() {
     }
 
     function search_album() {
+        messageBar.loading.show();
         $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
@@ -79,6 +81,7 @@ $(document).ready(function() {
         var tr = $("tr[data-music-id='"+music_id+"']");
         tr.find(".status").show().text("starting");
         tr.find(".playbtn, .downloadbtn").hide();
+        messageBar.loading.show();
         $.post(deezer_downloader.api_root + '/download', 
             JSON.stringify({ type: type, music_id: parseInt(music_id), add: add}),
             function(data) {
@@ -143,6 +146,7 @@ $(document).ready(function() {
 //==> MessageBar helper
 
 function MessageBar() {
+    var self = this;
     this.show = function(className, text, interval, isHtml) {
       var id = "loadingWidget_" + className;
       if ($('#'+id).length == 0)
@@ -155,13 +159,13 @@ function MessageBar() {
     this.hide = function(className) {
       $("#loadingWidget_"+className).slideUp();
     };
-    var loading = $("<div class='progressBar'></div>").prependTo("body").hide();
+    this.loading = $("<div class='progressBar'></div>").prependTo("body").hide();
     
-    $(document).ajaxStart(function() {
-        loading.show();
-    });
+    /*$(document).ajaxStart(function() {
+        self.loading.show();
+    });*/
     $(document).ajaxStop(function() {
-        loading.hide();
+        self.loading.hide();
     });
     $(document).ajaxError(function(event, jqxhr, settings, thrownError) {
         console.log("ajaxError",event,jqxhr,thrownError);
