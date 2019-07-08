@@ -104,6 +104,7 @@ $(document).ready(function() {
     }
 
     deezer_downloader.list_album = function(music_id) {
+        messageBar.loading.show();
         $.post(deezer_downloader.api_root + '/album/list', 
             JSON.stringify({ music_id: parseInt(music_id) }),
             function(data) {
