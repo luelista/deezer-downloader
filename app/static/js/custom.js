@@ -5,9 +5,9 @@ $(document).ready(function() {
         $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "track", query: $('#query').val() }),
             function(data) {
-                $("#results > tbody").html("");
+                var table = $("#results > tbody").html("");
                 for (var i = 0; i < data.length; i++) {
-                    drawTableEntry(data[i], "track");
+                    table.append(drawTableEntry(data[i], "track"));
                 }
         });
     }
@@ -17,9 +17,9 @@ $(document).ready(function() {
         $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
-                $("#results > tbody").html("");
+                var table = $("#results > tbody").html("");
                 for (var i = 0; i < data.length; i++) {
-                    drawTableEntry(data[i], "album");
+                    table.append(drawTableEntry(data[i], "album"));
                 }
         });
     }
@@ -27,7 +27,6 @@ $(document).ready(function() {
     function drawTableEntry(rowData, mtype) {
         var row = $("<tr data-music-id='"+rowData.id+"' />")
         console.log(rowData);
-        $("#results").append(row); 
         row.append($("<td>" + rowData.artist + "</td>"));
         row.append($("<td>" + rowData.title + "</td>"));
         row.append($("<td>" + rowData.album + "</td>"));
@@ -45,6 +44,7 @@ $(document).ready(function() {
         } else {
             row.append($("<td></td>"));
         }
+        return row;
     }
 
     var statusCheckDelay = 4, statusCheckCounter = 0;
@@ -108,12 +108,12 @@ $(document).ready(function() {
     deezer_downloader.list_album = function(music_id) {
         $("#albumList").modal("show");
         messageBar.loading.show();
+        var table = $("#albumListResults > tbody").html("");
         $.post(deezer_downloader.api_root + '/album/list', 
             JSON.stringify({ music_id: parseInt(music_id) }),
             function(data) {
-                $("#albumListResults > tbody").html("");
                 for (var i = 0; i < data.length; i++) {
-                    drawTableEntry(data[i], "track");
+                    table.append(drawTableEntry(data[i], "track"));
                 }
         });
     }
@@ -126,7 +126,7 @@ $(document).ready(function() {
         search_album();
     });
 
-    $("#albumList").modal();
+    $("#albumList").modal({show:false});
 
     var bbody = document.getElementById('body');
     bbody.onkeydown = function (event) {
