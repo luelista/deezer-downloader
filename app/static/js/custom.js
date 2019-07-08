@@ -42,6 +42,8 @@ $(document).ready(function() {
             row.append($("<td class='listbtn'>" + 
                '<button class="btn btn-secondary" onclick="deezer_downloader.list_album(\'' + rowData.id  + '\');" >list album </button>'  +
                "</td>"));
+        } else {
+            row.append($("<td></td>"));
         }
     }
 
