@@ -11,8 +11,12 @@ from os.path import basename
 
 import arrow
 import requests
-from settings import download_dir, music_dir
+
 deezer = DeezerLogin()
+
+def set_session_id(sid):
+    deezer.set_session_id(sid)
+
 """
   Author:   --<>
   Purpose: 
@@ -32,7 +36,6 @@ deezer = DeezerLogin()
 
 """
 
-config_DL_Dir 			= download_dir
 config_topsongs_limit	= 50
 
 import sys
@@ -432,7 +435,7 @@ def writeid3v2(fo, song):
 
 
 
-def download(song, album, fname="", ):
+def download(song, album, fname="", target_dir="/tmp/music"):
     """ download and save a song to a local file, given the json dict describing the song """
 
     if not song.get("SNG_ID"):
@@ -466,22 +469,22 @@ def download(song, album, fname="", ):
         
       # Make DL dir
         try: 
-            #print("Creating dir", (config_DL_Dir + "/" + album_dir))
-            os.makedirs( config_DL_Dir + "/" + album_dir )
+            #print("Creating dir", (target_dir + "/" + album_dir))
+            os.makedirs( target_dir + "/" + album_dir )
         except Exception as e:
             #print(e)
             pass
         
         print("Downloading song '{}'".format(outname.encode('utf-8')))
         f = outname
-        outname = config_DL_Dir + "/%s" %outname
+        outname = target_dir + "/" + outname
     else:
         outname = fname
 
     # wont work with time stamp in filename...
-    if os.path.exists(os.path.join(config_DL_Dir, outname)):
+    if os.path.exists(os.path.join(target_dir, outname)):
         print("File {} already there. skipping".format(basename(outname)))
-        return os.path.join(download_dir[len(music_dir) + 1 :] ,f)
+        return f
 
     try:
         url = (host_stream_cdn + "/%s") % (str( song["MD5_ORIGIN"] )[0],urlkey )
@@ -522,7 +525,7 @@ def download(song, album, fname="", ):
         #raise
     else:
         print("Dowload finished. Dest: {}".format(outname))
-    return os.path.join(download_dir[len(music_dir) + 1 :] ,f) # (deezer download dir - download dir) + file name of the downloaded file
+    return f
 
 
 init() #Start Colorama's init'
@@ -565,16 +568,22 @@ def sorted_nicely( l ):
 
 
 def mpd_update(songs, add_to_playlist):
-        print("Updating mpd")
+	print("Updating mpd")
 	c = mpd.MPDClient(use_unicode=True)
 	c.connect("localhost", 6600)
 	c.update()
 	if add_to_playlist:
             songs = [s for s in songs if s]
+            # wait up to 20 seconds for the first song to appear
+            # because c.update() does not block wait for it 
+            wait_time = 20
             while len(c.search("file", songs[0])) == 0:
-                # c.update() does not block wait for it 
                 print("'{}' not found in the music db. Let's wait a second for it".format(songs[0]))
                 time.sleep(1)
+                wait_time -= 1
+                if wait_time < 1:
+                    print("Song didn't appear, maybe downloading failed. Exiting thread")
+                    return
             for song in songs:
                 if song:
                     print("Adding '{}' to mpd playlist".format(song))
@@ -603,24 +612,28 @@ def my_download_from_json_file():
         download(song)
 
 
-def my_download_album(album_id, update_mpd, add_to_playlist):
+def my_download_album(album_id, music_dir, download_dir_name, update_mpd, add_to_playlist):
+    target_dir = music_dir + "/" + download_dir_name
     song_locations = []
     for song in parse_deezer_page("album", album_id):
-        song_locations.append(download(song, album=True))
+        filename = download(song, album=True, target_dir=target_dir)
+        song_locations.append(download_dir_name + "/" + filename)
     songs_locations = sorted_nicely(set(song_locations))
     if update_mpd:
         mpd_update(song_locations, add_to_playlist)
     return song_locations
 
 
-def my_download_song(track_id, update_mpd=True, add_to_playlist=False):
+def my_download_song(track_id, music_dir, download_dir_name, update_mpd=True, add_to_playlist=False):
+    target_dir = music_dir + "/" + download_dir_name
     song = list(parse_deezer_page("track", track_id))[0]
-    song_location = download(song, album=False)
+    filename = download(song, album=False, target_dir=target_dir)
+    song_location = download_dir_name + "/" + filename
     if update_mpd:
         mpd_update([song_location], add_to_playlist)
 
 
 if __name__ == '__main__':
-    my_download_song("2271563", True, True)
-    my_download_album("93769922", create_zip=True)
+    my_download_song("2271563", "/tmp/music", "deezer", True, True)
+    my_download_album("93769922", "/tmp/music", "deezer", create_zip=True)
     pass

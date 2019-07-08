@@ -3,8 +3,6 @@ import requests
 from ipdb import set_trace
 import os.path
 import pickle
-sys.path.append("..")
-from credentials import sid
 
 base = "https://www.deezer.com%s"
 header = {
@@ -27,12 +25,14 @@ class DeezerLogin():
     def __init__(self):
         self.session = requests.session()
         self.session.headers.update(header)
-        self.session.cookies.update({'sid': sid, 'comeback':'1'})
+
+    def set_session_id(self, session_id):
+        self.session.cookies.update({'sid': session_id, 'comeback':'1'})
+
 
     def test_login(self):
         # sid cookie has no expire date. Session will be extended on the server side
         # so we will just send a request regularly to not get logged out
-        sys.path.append("..")
         from deezer import my_download_song
         
         login_successfull = True

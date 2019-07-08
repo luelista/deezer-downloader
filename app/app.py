@@ -9,8 +9,10 @@ from functools import wraps
 from threading import Thread
 
 from flask import Flask, render_template, request, jsonify
-from settings import update_mpd, api_root, static_root
-from deezer import deezerSearch, my_list_album, my_download_song, my_download_album 
+
+import settings, credentials
+from deezer import deezerSearch, my_list_album, my_download_song, my_download_album, set_session_id
+set_session_id(credentials.sid)
 
 from ipdb import set_trace
 
@@ -82,10 +84,12 @@ def download():
         add: true|false (add to mpd playlist)
     """
     add, music_id, type = request.get_json(force=True).values()
+    dl_args = (music_id, settings.music_dir, settings.download_dir_name, 
+                settings.update_mpd, add)
     if type == "track":
-        t = Thread(target=my_download_song, args=(music_id, update_mpd, add))
+        t = Thread(target=my_download_song, args=dl_args)
     else:
-        t = Thread(target=my_download_album, args=(music_id, update_mpd, add))
+        t = Thread(target=my_download_album, args=dl_args)
     t.start()
     return jsonify({"state": "have fun"})
 
@@ -99,7 +103,7 @@ def serve_static(filename):
 @app.route("/")
 def index():
     return render_template("index.html",
-        api_root=api_root, static_root=static_root)
+        api_root=settings.api_root, static_root=settings.static_root)
 
 
 if __name__ == '__main__':
