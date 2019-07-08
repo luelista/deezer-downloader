@@ -1,7 +1,7 @@
 
-.messageBar { position: fixed; top: 0; left: 0; right: 0; padding: 10px; background: #FDD835; color: white; font-size: 12pt; z-index: 100;
+.messageBar { position: fixed; top: 0; left: 0; right: 0; padding: 10px; background: #FDD835; color: white; font-size: 12pt; z-index: 2000;
 }
-.progressBar { position: fixed; top: 0; left: 0; width: 30%; height: 5px; background: #0091EA; z-index: 101;
+.progressBar { position: fixed; top: 0; left: 0; width: 30%; height: 5px; background: #0091EA; z-index: 2001;
   animation: slide 5s forwards;
 }
 @keyframes slide {
