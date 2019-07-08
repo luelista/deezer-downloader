@@ -615,10 +615,10 @@ def my_download_from_json_file():
 
 
 def my_download_album(album_id, music_dir, download_dir_name, update_mpd, add_to_playlist):
-    download_status[album_id] = "parsing"
+    download_status[album_id] = "loading"
     target_dir = music_dir + "/" + download_dir_name
     song_locations = []
-    songs = parse_deezer_page("album", album_id)
+    songs = list(parse_deezer_page("album", album_id))
     for i, song in enumerate(songs):
         download_status[album_id] = "downloading %d of %d" % (i, len(songs))
         filename = download(song, album=True, target_dir=target_dir)
