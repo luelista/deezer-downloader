@@ -43,13 +43,17 @@ $(document).ready(function() {
         }
     }
 
+    var statusCheckDelay = 4, statusCheckCounter = 0;
     function checkStatus() {
+        if (++statusCheckCounter < statusCheckDelay) return;
+        statusCheckCounter = 0;
         if (document.hidden) return; //don't check status if page is in background
         var musicIds = [];
         $("tr[data-music-id]").each(function() { musicIds.push(parseInt(this.getAttribute("data-music-id"))); });
         if (musicIds.length == 0) return;
         $.post(deezer_downloader.api_root + '/status', JSON.stringify({ music_ids : musicIds }),
         function(data) {
+            statusCheckDelay = 4;
             data.forEach(function(item) {
                 var tr = $("tr[data-music-id='"+item.music_id+"']");
                 if (item.status == "unknown") {
@@ -62,18 +66,23 @@ $(document).ready(function() {
                     tr.find(".playbtn button").attr("disabled",false);
                     tr.find(".downloadbtn button").attr("disabled",true);
                 } else {
+                    statusCheckDelay = 1; //fast checking if download in progress
                     tr.find(".status").show().text(item.status);
                     tr.find(".playbtn, .downloadbtn").hide();
                 }
             })
         });
     }
-    setInterval(checkStatus, 4000);
+    setInterval(checkStatus, 1000);
     
     deezer_downloader.download = function(music_id, type, add) {
+        var tr = $("tr[data-music-id='"+music_id+"']");
+        tr.find(".status").show().text("starting");
+        tr.find(".playbtn, .downloadbtn").hide();
         $.post(deezer_downloader.api_root + '/download', 
             JSON.stringify({ type: type, music_id: parseInt(music_id), add: add}),
             function(data) {
+                statusCheckDelay = 1; //fast checking if download in progress
                 if(type == "album") {
                     if(add == true) {
                         text = "Good choice! The album will be downloaded and queued to the playlist";
