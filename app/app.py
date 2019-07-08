@@ -84,7 +84,7 @@ def list_album():
         [ { music_id, status } ]
     """
     music_ids = request.get_json(force=True)['music_ids']
-    return jsonify([ { music_id: id, status: get_download_status(id) for id in music_ids } ])
+    return jsonify([ { "music_id": id, "status": get_download_status(id) } for id in music_ids ])
 
 
 @app.route('/api/v1/deezer/download', methods=['POST'])
