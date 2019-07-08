@@ -23,6 +23,10 @@
     <link rel="shortcut icon" type="image/png" href="{{ static_root }}/favicon.ico">
 	<link rel="stylesheet" href="{{ static_root }}/css/font-awesome.min.css">
 
+    <script>
+        window.deezer_downloader = {};
+        window.deezer_downloader.api_root = '{{ api_root }}';
+    </script>
   </head>
 
   <body id="body" >
@@ -76,9 +80,6 @@
     <!-- Bootstrap core JavaScript -->
     <script src="{{ static_root }}/js/jquery.min.js"></script>
     <script src="{{ static_root }}/js/custom.js"></script>
-    <script>
-        window.deezer_downloader_api_root = '{{ api_root }}';
-    </script>
 
 <link rel="stylesheet" type="text/css" href="{{ static_root }}/css/jquery.jgrowl.min.css" />
 <script src="{{ static_root }}/js/jquery.jgrowl.min.js"></script>

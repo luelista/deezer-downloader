@@ -1,7 +1,7 @@
 $(document).ready(function() {
 
     function search_track() {
-        $.post(deezer_downloader_api_root + '/search', 
+        $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "track", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -12,7 +12,7 @@ $(document).ready(function() {
     }
 
     function search_album() {
-        $.post(deezer_downloader_api_root + '/search', 
+        $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -31,14 +31,14 @@ $(document).ready(function() {
         row.append($("<td>" + rowData.album + "</td>"));
         row.append($("<td class='status' colspan=2 style='display:none'></td>"));
             row.append($('<td class="downloadbtn">' + 
-                '<button class="btn btn-default" onclick="download(\'' + rowData.id  + '\', \''+ mtype + '\', false);" > <i class="fa fa-download" title="download" ></i> </button>'  +
+                '<button class="btn btn-default" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', false);" > <i class="fa fa-download" title="download" ></i> </button>'  +
             "</td>"));
             row.append($('<td class="playbtn">' + 
-                '<button class="btn btn-default" onclick="download(\'' + rowData.id  + '\', \''+ mtype + '\', true);" > <i class="fa fa-play-circle" title="download and add to playlist" ></i> </button>'  +
+                '<button class="btn btn-default" onclick="deezer_downloader.download(\'' + rowData.id  + '\', \''+ mtype + '\', true);" > <i class="fa fa-play-circle" title="download and add to playlist" ></i> </button>'  +
             "</td>"));
         if(mtype == "album") {
             row.append($("<td class='listbtn'>" + 
-               '<button class="btn btn-default" onclick="list_album(\'' + rowData.id  + '\');" >list album </button>'  +
+               '<button class="btn btn-default" onclick="deezer_downloader.list_album(\'' + rowData.id  + '\');" >list album </button>'  +
                "</td>"));
         }
     }
@@ -46,7 +46,8 @@ $(document).ready(function() {
     function checkStatus() {
         if (document.hidden) return; //don't check status if page is in background
         var musicIds = $("tr[data-music-id]").map(function(el) { return parseInt(el.attr("data-music-id")); });
-        $.post(deezer_downloader_api_root + '/status', { music_ids : musicIds }, function(data) {
+        if (musicIds.length == 0) return;
+        $.post(deezer_downloader.api_root + '/status', { music_ids : musicIds }, function(data) {
             data.forEach(function(item) {
                 var tr = $("tr[data-music-id='"+item.music_id+"']");
                 if (item.status == "unknown") {
@@ -67,8 +68,8 @@ $(document).ready(function() {
     }
     setInterval(checkStatus, 4000);
     
-    window.download = function(music_id, type, add) {
-        $.post(deezer_downloader_api_root + '/download', 
+    deezer_downloader.download = function(music_id, type, add) {
+        $.post(deezer_downloader.api_root + '/download', 
             JSON.stringify({ type: type, music_id: parseInt(music_id), add: add}),
             function(data) {
                 if(type == "album") {
@@ -88,8 +89,8 @@ $(document).ready(function() {
         });
     }
 
-    window.list_album = function(music_id) {
-        $.post(deezer_downloader_api_root + '/album/list', 
+    deezer_downloader.list_album = function(music_id) {
+        $.post(deezer_downloader.api_root + '/album/list', 
             JSON.stringify({ music_id: parseInt(music_id) }),
             function(data) {
                 $("#results > tbody").html("");
@@ -113,7 +114,7 @@ var bbody = document.getElementById('body');
 bbody.onkeydown = function (event) {
     if (event.key !== undefined) {
        if (event.key === 'Enter' && event.altKey) {
-         $.post(deezer_downloader_api_root + '/search', 
+         $.post(deezer_downloader.api_root + '/search', 
             JSON.stringify({ type: "album", query: $('#query').val() }),
             function(data) {
                 $("#results > tbody").html("");
@@ -122,7 +123,7 @@ bbody.onkeydown = function (event) {
                 }
          });
        }  else if (event.key === 'Enter' ) {
-          $.post(deezer_downloader_api_root + '/search', 
+          $.post(deezer_downloader.api_root + '/search', 
               JSON.stringify({ type: "track", query: $('#query').val() }),
               function(data) {
                   $("#results > tbody").html("");

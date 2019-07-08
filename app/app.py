@@ -76,7 +76,7 @@ def list_album():
 
 @app.route('/api/v1/deezer/status', methods=['POST'])
 @validate_schema("music_ids")
-def list_album():
+def check_status():
     """
     para:
         music_ids (array of int): music_ids to check status of
